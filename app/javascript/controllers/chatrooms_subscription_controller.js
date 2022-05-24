@@ -3,13 +3,15 @@ import consumer from "../channels/consumer"
 
 export default class extends Controller {
   static values = { chatroomId: Number }
-  static targets = ["messages"]
 
   connect() {
     this.channel = consumer.subscriptions.create(
       { channel: "ChatroomChannel", id: this.chatroomIdValue },
-      { received: data => console.log(data) }
+      { received: data => this._insertMessageAndScroll(data) }
     )
-    console.log(`Subscribed to the chatroom with the id ${this.chatroomIdValue}.`)
+  }
+  _insertMessageAndScroll(data) {
+    this.element.insertAdjacentHTML("beforeend", data)
+    this.element.scrollTo(0, this.element.scrollHeight)
   }
 }
